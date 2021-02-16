@@ -1,43 +1,39 @@
 <?php
-require 'mailer/PHPMailerAutoload.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
-$mail = new PHPMailer();
+require 'mailer/src/Exception.php';
+require 'mailer/src/PHPMailer.php';
+require 'mailer/src/SMTP.php';
+
+// Carregar o autoloader do composer
+require 'vendor/autoload.php';
+// Instância da classe
+$mail = new PHPMailer(true);
+try {
+
 $mail->isSMTP();
 $mail->Host = 'smtp.gmail.com';
 $mail->SMTPAuth = true;
 $mail->SMTPSecure = 'tls';
-$mail->Username = 'csgoptk8@gmail.com';
+$mail->Username = 'emailteste@gmail.com';
 $mail->Password = 'envunmxyjhwrblpf';
-$mail->Port = 465
+$mail->Port = 587;
 
-
-require 'mailer/PHPMailerAutoload.php';
-
-       if (isset($_POST['assunto']) && !empty($_POST['assunto'])) {
-                  $assunto = $_POST['assunto'];
-       }
-       if (isset($_POST['mensagem']) && !empty($_POST['mensagem'])) {
-                 $mensagem = $_POST['mensagem'];
-       }
-
-   $mail = new PHPMailer;
-   $mail->isSMTP();
-   $mail->Host = 'smtp.gmail.com';
-   $mail->SMTPAuth = true;
-   $mail->SMTPSecure = 'tls';
-   $mail->Username = 'exemplo@gmail.com';
-    $mail->Password = 'senha';
-  $mail->Port = 587;
-  $mail->setFrom('email@gmail.com', 'Contato');
-  $mail->addAddress('email@mail.com.br');
-    $mail->isHTML(true);
-
-    $mail->Subject = $assunto;
-   $mail->Body    = nl2br($mensagem);
-   $mail->AltBody = nl2br(strip_tags($mensagem));
-   if(!$mail->send()) {
-       echo 'Não foi possível enviar a mensagem.<br>';
-        echo 'Erro: ' . $mail->ErrorInfo;
-    } else {
-         header('Location: index.php?enviado');
-    }
+    // Define o remetente
+    $mail->setFrom('ptkdev@outlook.com', 'Nome do Remetente');
+    // Define o destinatário
+    $mail->addAddress('emailteste@gmail.com', 'Destinatário');
+      // Conteúdo da mensagem
+    $mail->isHTML(true);  // Seta o formato do e-mail para aceitar conteúdo HTML
+    $mail->Subject = 'Assunto';
+    $mail->Body    = 'Este é o corpo da mensagem <b>Olá em negrito!</b>';
+    $mail->AltBody = 'Este é o cortpo da mensagem para clientes de e-mail que não reconhecem HTML';
+    // Enviar
+    $mail->send();
+    echo 'A mensagem foi enviada!';
+}
+catch (Exception $e)
+{
+    echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+}
